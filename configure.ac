@@ -653,6 +653,7 @@ AC_CONFIG_FILES([
   src/java-connector/Makefile \
   src/java-connector/jni/Makefile \
   src/java-connector/jvmti-agent/Makefile \
+  src/java-connector/aspectj/Makefile \
   etc/Makefile])
 
 AC_CONFIG_FILES([\

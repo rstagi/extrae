@@ -41,10 +41,10 @@
 #define JAVA_JVMTI_EXCEPTION_INDEX        1
 #define JAVA_JVMTI_OBJECT_ALLOC_INDEX     2
 #define JAVA_JVMTI_OBJECT_FREE_INDEX      3
-#define JAVA_JVMTI_THREAD_INDEX           4
+#define JAVA_JVMTI_THREAD_RUN_INDEX       4
 #define JAVA_JVMTI_WAIT_INDEX             5
-
-#define MAX_JAVA_INDEX                    6
+#define JAVA_ASPECTS_THREAD_START_INDEX   6
+#define MAX_JAVA_INDEX                    7
 
 static int inuse[MAX_JAVA_INDEX] = { FALSE };
 
@@ -54,8 +54,9 @@ void Enable_Java_Operation (int type)
 	ENABLE_JAVA_EVENT(type, JAVA_JVMTI_EXCEPTION);
 	ENABLE_JAVA_EVENT(type, JAVA_JVMTI_OBJECT_ALLOC);
     ENABLE_JAVA_EVENT(type, JAVA_JVMTI_OBJECT_FREE);
-    ENABLE_JAVA_EVENT(type, JAVA_JVMTI_THREAD);
+    ENABLE_JAVA_EVENT(type, JAVA_JVMTI_THREAD_RUN);
     ENABLE_JAVA_EVENT(type, JAVA_JVMTI_WAIT);
+    ENABLE_JAVA_EVENT(type, JAVA_ASPECTS_THREAD_START);
 }
 
 #if defined(PARALLEL_MERGE)
@@ -101,14 +102,22 @@ void JavaEvent_WriteEnabledOperations (FILE * fd)
 		fprintf (fd, "EVENT_TYPE\n%d %d Java object free\n\n", 0, JAVA_JVMTI_OBJECT_FREE_EV);
 	}
 
-	if (inuse[JAVA_JVMTI_THREAD_INDEX])
+	if (inuse[JAVA_JVMTI_THREAD_RUN_INDEX])
 	{
-		fprintf (fd, "EVENT_TYPE\n%d %d Java thread running\n\n", 0, JAVA_JVMTI_THREAD_EV);
+		fprintf (fd, "EVENT_TYPE\n%d %d Java thread running\n\n", 0, JAVA_JVMTI_THREAD_RUN_EV);
+		fprintf (fd, "VALUES\n0 Thread ended \n1 Thread started\n\n");
 	}
-
+	
 	if (inuse[JAVA_JVMTI_WAIT_INDEX])
 	{
-		fprintf (fd, "EVENT_TYPE\n%d %d Java thread waiting in join\n\n", 0, JAVA_JVMTI_WAIT_EV);
+		fprintf (fd, "EVENT_TYPE\n%d %d Java thread waiting on an object (it may be a Thread join)\n\n", 0, JAVA_JVMTI_WAIT_EV);
+		fprintf (fd, "VALUES\n0 Wait ended\n1 Started waiting\n\n");
+	}
+    
+    if (inuse[JAVA_ASPECTS_THREAD_START_INDEX])
+	{
+		fprintf (fd, "EVENT_TYPE\n%d %d Java thread started\n\n", 0, JAVA_JVMTI_THREAD_RUN_EV);
+		fprintf (fd, "VALUES\n0 Thread created\n1 Thread creation started\n\n");
 	}
 }
 

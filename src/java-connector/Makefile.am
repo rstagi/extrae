@@ -2,6 +2,9 @@ SUBDIRS = jni
 
 if WANT_JAVA_JVMTI
 SUBDIRS += jvmti-agent
+if WANT_JAVA_WITH_ASPECTJ 
+SUBDIRS += aspectj
+endif
 endif
 
 include $(top_srcdir)/PATHS

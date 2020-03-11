@@ -10,6 +10,8 @@ extraej.bash: extraej.bash.skeleton
 	$(top_srcdir)/substitute $(SED) "@sub_ASPECTWEAVER_JAR@" "${ASPECT_WEAVER_JAR}"  $@
 	$(top_srcdir)/substitute $(SED) "@sub_ASPECTJRT_JAR@" "${ASPECTJRT_JAR}" $@
 	$(top_srcdir)/substitute $(SED) "@sub_PREFIXDIR@" "${prefix}" $@
+	$(top_srcdir)/substitute $(SED) "@sub_LIBDIR@" "${libdir}" $@
+	$(top_srcdir)/substitute $(SED) "@sub_ASPECTSDIR@" "${EXTRAEJ_ASPECTS_DIR}" $@
 
 install-data-hook: extraej.bash
 	cp -v extraej.bash $(DESTDIR)$(bindir)/extraej.bash

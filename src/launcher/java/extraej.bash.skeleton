@@ -1,15 +1,17 @@
 #!/bin/bash
 
 EXTRAE_HOME=@sub_PREFIXDIR@
+EXTRAE_LIB_DIR=@sub_LIBDIR@
+EXTRAEJ_ASPECTS_DIR=${EXTRAE_LIB_DIR}/extraejaspects
 
 if [[ "${EXTRAEJ_LIBPTTRACE_PATH}" = "" ]]; then
-	EXTRAEJ_LIBPTTRACE_PATH=${EXTRAE_HOME}/lib/libpttrace.so
+	EXTRAEJ_LIBPTTRACE_PATH=${EXTRAE_LIB_DIR}/libpttrace.so
 fi
 if [[ "${EXTRAEJ_JAVATRACE_PATH}" = "" ]]; then
-        EXTRAEJ_JAVATRACE_PATH=${EXTRAE_HOME}/lib/javatrace.jar
+        EXTRAEJ_JAVATRACE_PATH=${EXTRAE_LIB_DIR}/javatrace.jar
 fi
 if [[ "${EXTRAEJ_LIBEXTRAEJVMTIAGENT_PATH}" = "" ]]; then
-        EXTRAEJ_LIBEXTRAEJVMTIAGENT_PATH=${EXTRAE_HOME}/lib/libextrae-jvmti-agent.so
+        EXTRAEJ_LIBEXTRAEJVMTIAGENT_PATH=${EXTRAE_LIB_DIR}/libextrae-jvmti-agent.so
 fi
 
 die() { echo "$@" 1>&2 ; exit 1; }
@@ -304,6 +306,8 @@ if [[ -x "${AJC}" ]]; then
             else
                 inpath=.
             fi
+            
+            cp -r ${EXTRAEJ_ASPECTS_DIR}/* ${tmpdir}/aspects/
 		
 			if [[ "${verbose}" = "yes" ]]; then
 				echo "Executing: CLASSPATH=${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${EXTRAEJ_JAVATRACE_PATH}:${CLASSPATH} \
