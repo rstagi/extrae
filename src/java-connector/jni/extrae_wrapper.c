@@ -44,11 +44,13 @@ jclass activityClass;
 jobject activityObj;
 
 static unsigned int get_task_id(void)
-{ return __TASKID; }
+{ return TASKID; }
 
 static unsigned int get_num_tasks(void)
 { return __NUMTASKS; }
 
+static unsigned int get_thread_id(void)
+{ return THREADID; }
 
 JNIEXPORT void JNICALL Java_es_bsc_cepbatools_extrae_Wrapper_SetTaskID(
 	JNIEnv *env, jclass jc, jint id)
@@ -114,6 +116,14 @@ JNIEXPORT jint JNICALL Java_es_bsc_cepbatools_extrae_Wrapper_GetPID(JNIEnv *env,
 	UNREFERENCED(jc);
 
 	return getpid();
+}
+
+JNIEXPORT jint JNICALL Java_es_bsc_cepbatools_extrae_Wrapper_GetThreadID(JNIEnv *env, jclass jc)
+{
+    UNREFERENCED(env);
+    UNREFERENCED(jc);
+
+    return THREADID;
 }
 
 JNIEXPORT void JNICALL Java_es_bsc_cepbatools_extrae_Wrapper_Event (JNIEnv *env,

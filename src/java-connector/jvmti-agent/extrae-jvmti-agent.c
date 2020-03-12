@@ -41,6 +41,7 @@
 #include "threadid.h"
 #include "threadinfo.h"
 #include "java_probe.h"
+//#include "wrapper.h"
 
 #define CHECK_JVMTI_ERROR(x,call) \
 	{ if (x != JVMTI_ERROR_NONE) { fprintf (stderr, PACKAGE_NAME": Error %u during %s in %s:%d\n", x, #call, __FILE__, __LINE__); } }
@@ -178,7 +179,8 @@ static void JNICALL Extraej_cb_Monitor_wait(jvmtiEnv *jvmti_env,
     UNREFERENCED_PARAMETER(jni_env);
     UNREFERENCED_PARAMETER(thread);
     UNREFERENCED_PARAMETER(object);
-
+    UNREFERENCED_PARAMETER(timeout);
+    
     Extrae_Java_Wait_start();
 }
 
@@ -189,6 +191,7 @@ static void JNICALL Extraej_cb_Monitor_waited(jvmtiEnv *jvmti_env,
     UNREFERENCED_PARAMETER(jni_env);
     UNREFERENCED_PARAMETER(thread);
     UNREFERENCED_PARAMETER(object);
+    UNREFERENCED_PARAMETER(timed_out);
 
     Extrae_Java_Wait_end();
 }

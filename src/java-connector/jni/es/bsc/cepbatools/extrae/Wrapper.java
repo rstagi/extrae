@@ -70,6 +70,7 @@ public final class Wrapper
 	  int partner, long id);
 
 	public static native int GetPID ();
+	public static native int GetThreadID ();
 	public static native void SetTaskID (int id);
 	public static native void SetNumTasks (int num);
 	public static native int GetTaskID ();

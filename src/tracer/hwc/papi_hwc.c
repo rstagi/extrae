@@ -254,7 +254,7 @@ int HWCBE_PAPI_Add_Set (int pretended_set, int rank, int ncounters, char **count
 		if (rc != PAPI_OK)
 		{
 			if (rank == 0)
-				fprintf (stderr, PACKAGE_NAME": Error! Cannot query information for hardware counter %s (0x%08x). Check set %d.\n", counters[i], HWC_sets[num_set].counters[HWC_sets[num_set].num_counters], pretended_set);
+				fprintf (stderr, PACKAGE_NAME": Error (%d)! Cannot query information for hardware counter %s (0x%08x). Check set %d.\n", rc, counters[i], HWC_sets[num_set].counters[HWC_sets[num_set].num_counters], pretended_set);
 
 			HWC_sets[num_set].counters[HWC_sets[num_set].num_counters] = NO_COUNTER;
 		}
@@ -624,7 +624,7 @@ int HWCBE_PAPI_Init_Thread (UINT64 time, int threadid, int forked)
 			rc = PAPI_create_eventset (&(HWC_sets[i].eventsets[threadid]));
 			if (PAPI_OK != rc)
 			{
-				fprintf (stderr, PACKAGE_NAME": Error! Unable to create eventset (%d of %d) in task %d, thread %d\n", i+1, HWC_num_sets, TASKID, threadid);
+				fprintf (stderr, PACKAGE_NAME": Error (%d)! Unable to create eventset (%d of %d) in task %d, thread %d\n", rc, i+1, HWC_num_sets, TASKID, threadid);
 				continue;
 			}
 
@@ -639,7 +639,7 @@ int HWCBE_PAPI_Init_Thread (UINT64 time, int threadid, int forked)
 						char EventName[PAPI_MAX_STR_LEN];
 
 						PAPI_event_code_to_name (HWC_sets[i].counters[j], EventName);
-						fprintf (stderr, PACKAGE_NAME": Error! Hardware counter %s (0x%08x) cannot be added in set %d (task %d, thread %d)\n", EventName, HWC_sets[i].counters[j], i+1, TASKID, threadid);
+						fprintf (stderr, PACKAGE_NAME": Error (%d)! Hardware counter %s (0x%08x) cannot be added in set %d (task %d, thread %d)\n", rc, EventName, HWC_sets[i].counters[j], i+1, TASKID, threadid);
 						HWC_sets[i].counters[j] = NO_COUNTER;
 						/* break; */
 					}
@@ -651,7 +651,7 @@ int HWCBE_PAPI_Init_Thread (UINT64 time, int threadid, int forked)
 			options.domain.domain = HWC_sets[i].domain;
 			rc = PAPI_set_opt (PAPI_DOMAIN, &options);
 			if (rc != PAPI_OK)
-				fprintf (stderr, PACKAGE_NAME": Error when setting domain for eventset %d\n", i+1);
+				fprintf (stderr, PACKAGE_NAME": Error (%d) when setting domain for eventset %d\n", rc, i+1);
 		}
 	} /* forked */ 
 
