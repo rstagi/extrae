@@ -15,7 +15,7 @@
 #include "extrae_user_events.h"
 #include "trace_macros.h"
 
-JNIEXPORT void JNICALL Java_es_bsc_cepbatools_extrae_JavaProbes_ThreadStart_begin(
+JNIEXPORT void JNICALL Java_es_bsc_cepbatools_extrae_JavaProbes_ThreadStartBegin(
     JNIEnv *env, jclass jc)
 {
     UNREFERENCED(env);
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_es_bsc_cepbatools_extrae_JavaProbes_ThreadStart_begi
 }
 
 
-JNIEXPORT void JNICALL Java_es_bsc_cepbatools_extrae_JavaProbes_ThreadStart_end(
+JNIEXPORT void JNICALL Java_es_bsc_cepbatools_extrae_JavaProbes_ThreadStartEnd(
     JNIEnv *env, jclass jc)
 {
     UNREFERENCED(env);

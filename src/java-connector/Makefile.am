@@ -12,7 +12,8 @@ include $(top_srcdir)/PATHS
 lib_LTLIBRARIES = \
   libjavatrace.la
 
-libjavatrace_la_SOURCES = jni/extrae_wrapper.c jni/extrae_javaprobes.c
+libjavatrace_la_SOURCES =  jni/extrae_wrapper.c
+libjavatrace_la_SOURCES += jni/extrae_javaprobes.c
 libjavatrace_la_CFLAGS  = $(JAVA_INCLUDES)\
  -Ijni/include \
  -I$(INCLUDE_DIR) \

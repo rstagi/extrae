@@ -7,12 +7,12 @@ public aspect Extrae {
     pointcut   Tread_Create(): !within(extrae.aspects.Extrae) && call (* java.lang.Thread.start (..));
     before(): Tread_Create()
             {
-                es.bsc.cepbatools.extrae.Wrapper.Eventandcounters (48000007, 1);
+                es.bsc.cepbatools.extrae.JavaProbes.ThreadStartBegin();
             }
 
     after() returning () : Tread_Create()
             {
-                es.bsc.cepbatools.extrae.Wrapper.Eventandcounters (48000007, 0);
+                es.bsc.cepbatools.extrae.JavaProbes.ThreadStartEnd();
             }
 
     /* main symbol instrumentation and adds symbolic information to the instrumented routines */

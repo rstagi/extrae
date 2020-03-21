@@ -26,7 +26,7 @@ public final class JavaProbes
 {
     static { System.loadLibrary("javatrace"); }
 
-    public static native void ThreadStart_begin();
-    public static native void ThreadStart_end();
+    public static native void ThreadStartBegin();
+    public static native void ThreadStartEnd();
 }
 
