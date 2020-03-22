@@ -99,7 +99,6 @@ parse_function_list_file () {
 #
 
 generate_aspects () {
-	mkdir ${tmpdir}/aspects
 	local pa=${tmpdir}/aspects/ExtraeAspects.java
 	echo "/* File automatically generated */" > ${pa}
 	echo "package extrae.aspects;" >> ${pa}
@@ -295,43 +294,39 @@ if [[ -x "${AJC}" ]]; then
 
 		parse_xml ${EXTRAE_CONFIG_FILE}
 
+		tmpdir=`mktemp -d extraej.XXXXXX`
+		mkdir ${tmpdir}/aspects
+		
 		if [[ ${#MemberArray[@]} -gt 0 ]]; then
-
-			tmpdir=`mktemp -d extraej.XXXXXX`
-
 			generate_aspects
-
-            if [[ "${jartarget}" != "" ]]; then
-                inpath=${jartarget}
-            else
-                inpath=.
-            fi
-            
-            cp -r ${EXTRAEJ_ASPECTS_DIR}/* ${tmpdir}/aspects/
-		
-			if [[ "${verbose}" = "yes" ]]; then
-				echo "Executing: CLASSPATH=${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${EXTRAEJ_JAVATRACE_PATH}:${CLASSPATH} \
-                    ${AJC} -inpath ${inpath} -sourceroots ${tmpdir}/aspects -d ${tmpdir}/instrumented"
-			fi
-		
-			CLASSPATH=${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${EXTRAEJ_JAVATRACE_PATH}:${CLASSPATH} \
-			${AJC} \
-			 -inpath ${inpath} \
-			 -sourceroots ${tmpdir}/aspects \
-			 -d ${tmpdir}/instrumented
-			if [[ "${?}" -ne 0 ]]; then
-				die "Error! ${AJC} failed"
-			fi
-
-			execute_java ${tmpdir}/instrumented:${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${CLASSPATH} \
-				${EXTRAEJ_LIBPTTRACE_PATH} \
-				"$@"
-		else
-
-			execute_java "${CLASSPATH}" \
-				${EXTRAEJ_LIBPTTRACE_PATH} \
-				"$@"
 		fi
+
+		if [[ "${jartarget}" != "" ]]; then
+			inpath=${jartarget}
+		else
+			inpath=.
+		fi
+		
+		cp -r ${EXTRAEJ_ASPECTS_DIR}/* ${tmpdir}/aspects/
+	
+		if [[ "${verbose}" = "yes" ]]; then
+			echo "Executing: CLASSPATH=${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${EXTRAEJ_JAVATRACE_PATH}:${CLASSPATH} \
+				${AJC} -1.8 -inpath ${inpath} -sourceroots ${tmpdir}/aspects -d ${tmpdir}/instrumented"
+		fi
+	
+		CLASSPATH=${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${EXTRAEJ_JAVATRACE_PATH}:${CLASSPATH} \
+		${AJC} \
+			-1.8 \
+			-inpath ${inpath} \
+			-sourceroots ${tmpdir}/aspects \
+			-d ${tmpdir}/instrumented
+		if [[ "${?}" -ne 0 ]]; then
+			die "Error! ${AJC} failed"
+		fi
+
+		execute_java ${tmpdir}/instrumented:${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${CLASSPATH} \
+			${EXTRAEJ_LIBPTTRACE_PATH} \
+			"$@"
 	else
 		# We want to reuse a previousl instrumented app
 		if [[ -d "${reuse_dir}" ]]; then

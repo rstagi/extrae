@@ -2,7 +2,7 @@ SUBDIRS = jni
 
 if WANT_JAVA_JVMTI
 SUBDIRS += jvmti-agent
-if WANT_JAVA_WITH_ASPECTJ 
+if WANT_JAVA_WITH_ASPECTJ
 SUBDIRS += aspectj
 endif
 endif
@@ -14,6 +14,7 @@ lib_LTLIBRARIES = \
 
 libjavatrace_la_SOURCES =  jni/extrae_wrapper.c
 libjavatrace_la_SOURCES += jni/extrae_javaprobes.c
+
 libjavatrace_la_CFLAGS  = $(JAVA_INCLUDES)\
  -Ijni/include \
  -I$(INCLUDE_DIR) \

@@ -25,8 +25,11 @@ package es.bsc.cepbatools.extrae;
 public final class JavaProbes
 {
     static { System.loadLibrary("javatrace"); }
-
+    
     public static native void ThreadStartBegin();
     public static native void ThreadStartEnd();
+    
+    public static native void ObjectNotifyBegin();
+    public static native void ObjectNotifyEnd();
 }
 
