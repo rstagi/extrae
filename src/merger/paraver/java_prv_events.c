@@ -44,7 +44,8 @@
 #define JAVA_JVMTI_THREAD_RUN_INDEX       4
 #define JAVA_JVMTI_WAIT_INDEX             5
 #define JAVA_ASPECTS_THREAD_START_INDEX   6
-#define MAX_JAVA_INDEX                    7
+#define JAVA_ASPECTS_OBJECT_NOTIFY_INDEX  7
+#define MAX_JAVA_INDEX                    8
 
 static int inuse[MAX_JAVA_INDEX] = { FALSE };
 
@@ -57,6 +58,7 @@ void Enable_Java_Operation (int type)
     ENABLE_JAVA_EVENT(type, JAVA_JVMTI_THREAD_RUN);
     ENABLE_JAVA_EVENT(type, JAVA_JVMTI_WAIT);
     ENABLE_JAVA_EVENT(type, JAVA_ASPECTS_THREAD_START);
+    ENABLE_JAVA_EVENT(type, JAVA_ASPECTS_OBJECT_NOTIFY);
 }
 
 #if defined(PARALLEL_MERGE)
@@ -116,8 +118,14 @@ void JavaEvent_WriteEnabledOperations (FILE * fd)
     
     if (inuse[JAVA_ASPECTS_THREAD_START_INDEX])
 	{
-		fprintf (fd, "EVENT_TYPE\n%d %d Java thread started\n\n", 0, JAVA_JVMTI_THREAD_RUN_EV);
+		fprintf (fd, "EVENT_TYPE\n%d %d Java thread started\n\n", 0, JAVA_ASPECTS_THREAD_START_EV);
 		fprintf (fd, "VALUES\n0 Thread created\n1 Thread creation started\n\n");
+	}
+    
+    if (inuse[JAVA_ASPECTS_OBJECT_NOTIFY_INDEX])
+	{
+		fprintf (fd, "EVENT_TYPE\n%d %d An Object's monitor is being notified\n\n", 0, JAVA_ASPECTS_OBJECT_NOTIFY_EV);
+		fprintf (fd, "VALUES\n0 Starts notifying\n1 Notify ended\n\n");
 	}
 }
 

@@ -247,6 +247,7 @@ enum {
 #define JAVA_JVMTI_THREAD_RUN_EV            48000005
 #define JAVA_JVMTI_WAIT_EV                  48000006
 #define JAVA_ASPECTS_THREAD_START_EV        48000007
+#define JAVA_ASPECTS_OBJECT_NOTIFY_EV       48000008
 
 #define OMP_STATS_BASE           65000000
 enum {

@@ -164,7 +164,7 @@ unsigned IsPthread (unsigned EvType)
 /******************************************************************************
  ***  IsJava
  ******************************************************************************/
-#define JAVA_EVENTS 7
+#define JAVA_EVENTS 8
 static unsigned java_events[] = {
 	JAVA_JVMTI_GARBAGECOLLECTOR_EV,
 	JAVA_JVMTI_EXCEPTION_EV,
@@ -172,7 +172,8 @@ static unsigned java_events[] = {
 	JAVA_JVMTI_OBJECT_FREE_EV,
 	JAVA_JVMTI_THREAD_RUN_EV,
 	JAVA_JVMTI_WAIT_EV,
-    JAVA_ASPECTS_THREAD_START_EV
+    JAVA_ASPECTS_THREAD_START_EV,
+	JAVA_ASPECTS_OBJECT_NOTIFY_EV
 };
 
 unsigned IsJava (unsigned EvType)

@@ -56,7 +56,7 @@ static int JAVA_JVMTI_call (event_t* event, unsigned long long current_time,
 
 	switch (EvType)
 	{
-		case JAVA_JVMTI_GARBAGECOLLECTOR_EV:
+		case JAVA_JVMTI_GARBAGECOLLECTOR_EV: // TODO Use memory semantics events
 		case JAVA_JVMTI_EXCEPTION_EV:
 			state = STATE_OTHERS;
 			Switch_State (state, (EvValue != EVT_END), ptask, task, thread);
@@ -69,6 +69,9 @@ static int JAVA_JVMTI_call (event_t* event, unsigned long long current_time,
 			break;
         case JAVA_ASPECTS_THREAD_START_EV:
                 Switch_State (STATE_OVHD, (EvValue != EVT_END), ptask, task, thread);
+            break;
+        case JAVA_ASPECTS_OBJECT_NOTIFY_EV:
+                Switch_State (STATE_BCAST, (EvValue != EVT_END), ptask, task, thread);
             break;
 	}
 
@@ -86,6 +89,7 @@ SingleEv_Handler_t PRV_Java_Event_Handlers[] = {
 	{ JAVA_JVMTI_THREAD_RUN_EV, JAVA_JVMTI_call },
 	{ JAVA_JVMTI_WAIT_EV, JAVA_JVMTI_call },
     { JAVA_ASPECTS_THREAD_START_EV, JAVA_JVMTI_call },
+    { JAVA_ASPECTS_OBJECT_NOTIFY_EV, JAVA_JVMTI_call },
 	{ NULL_EV, NULL }
 };
 

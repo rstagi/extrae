@@ -2,16 +2,18 @@ package extrae.aspects;
 
 import org.aspectj.lang.reflect.*;
 import java.util.*;
+import java.lang.*;
 
 public aspect Extrae {
 
-    private static HashMap<Integer, Integer> notifyingThreads = new HashMap();
-    private static HashMap<Integer, List<Integer>> waitingThreads = new HashMap();
+    private static HashMap<Integer, Integer> notifyingTasks = new HashMap();
+    private static HashMap<Integer, List<Integer>> waitingTasks = new HashMap();
 
     pointcut   Tread_Create(): !within(extrae.aspects.Extrae) && call (* java.lang.Thread.start (..));
     before() : Tread_Create()
             {
                 es.bsc.cepbatools.extrae.JavaProbes.ThreadStartBegin();
+                es.bsc.cepbatools.extrae.Wrapper.SetNumTasks(es.bsc.cepbatools.extrae.Wrapper.GetNumTasks()+1);
             }
 
     after() returning () : Tread_Create()
@@ -22,28 +24,33 @@ public aspect Extrae {
     pointcut    Notify(): !within(extrae.aspects.Extrae) && call (* java.lang.Object.notify (..));
     before() : Notify()
             {
-                //es.bsc.cepbatools.extrae.JavaProbes.ObjectNotifyBegin();
+                es.bsc.cepbatools.extrae.JavaProbes.ObjectNotifyBegin();
 
                 Object calligObj = thisJoinPoint.getThis();
                 Integer objID = Integer.valueOf(System.identityHashCode(calligObj));
 
-                List<Integer> waitingThdIDs = waitingThreads.get(objID);
+                System.out.println("Notifying event on " + objID);
 
-                if (waitingThdIDs != null)
+                List<Integer> waitingTskIDs = waitingTasks.get(objID);
+
+                if (waitingTskIDs != null)
                 {
-                    for (Integer threadID : waitingThdIDs)
+                    for (Integer taskID : waitingTskIDs)
                     {
-                        es.bsc.cepbatools.extrae.Wrapper.Comm(true, objID, 1, threadID, objID);
+                        System.out.println("Detected waiting task with ID: " + taskID);
+                        es.bsc.cepbatools.extrae.Wrapper.Comm(true, objID, 1, taskID, objID);
                     }
 
-                    Integer myThreadID = es.bsc.cepbatools.extrae.Wrapper.GetThreadID();
-                    notifyingThreads.put(objID, myThreadID);
+                    Integer myThreadID = es.bsc.cepbatools.extrae.Wrapper.GetTaskID();
+                    Integer myTaskID = myThreadID-1;
+                    es.bsc.cepbatools.extrae.Wrapper.SetTaskID(myTaskID);
+                    notifyingTasks.put(objID, myTaskID);
                 }
             }
 
     after() returning () : Notify()
             {
-                //es.bsc.cepbatools.extrae.JavaProbes.ObjectNotifyEnd();
+                es.bsc.cepbatools.extrae.JavaProbes.ObjectNotifyEnd();
             }
     
     pointcut    Wait(): !within(extrae.aspects.Extrae) && call (* java.lang.Object.wait (..));
@@ -52,13 +59,18 @@ public aspect Extrae {
                 Object calligObj = thisJoinPoint.getThis();
                 Integer objID = Integer.valueOf(System.identityHashCode(calligObj));
                 Integer myThreadID = es.bsc.cepbatools.extrae.Wrapper.GetThreadID();
-                
-                if (waitingThreads.get(objID)==null)
+                Integer myTaskID = myThreadID-1;
+                es.bsc.cepbatools.extrae.Wrapper.SetTaskID(myTaskID);
+
+                System.out.println("Wait event start on Object " + objID);
+                if (waitingTasks.get(objID)==null)
                 {
-                    waitingThreads.put(objID, new ArrayList());
+                    System.out.println("Creating ArrayList inside waitingTasks");
+                    waitingTasks.put(objID, new ArrayList());
                 }
 
-                waitingThreads.get(objID).add(myThreadID);
+                waitingTasks.get(objID).add(myTaskID);
+                System.out.println("Added task " + myTaskID + " to the waiting list for object " + objID);
             }
     
     after() returning () : Wait()
@@ -66,19 +78,23 @@ public aspect Extrae {
                 Object calligObj = thisJoinPoint.getThis();
                 Integer objID = Integer.valueOf(System.identityHashCode(calligObj));
 
-                Integer notifyerID = notifyingThreads.get(objID);
+                System.out.println("Wait event on object " + objID + " finished.");
+                Integer notifyerID = notifyingTasks.get(objID);
                 if (notifyerID != null)
                 {
+                    System.out.println("Detected notifyer with ID " + notifyerID);
                     es.bsc.cepbatools.extrae.Wrapper.Comm(false, objID, 1, notifyerID, objID);
                 }
                 
-                Integer myThreadID = Integer.valueOf(es.bsc.cepbatools.extrae.Wrapper.GetThreadID());
-                int index = waitingThreads.get(objID).indexOf(myThreadID);
-                waitingThreads.get(objID).remove(index);
-                if (waitingThreads.get(objID).size() == 0)
+                Integer myTaskID = Integer.valueOf(es.bsc.cepbatools.extrae.Wrapper.GetTaskID());
+                System.out.println("Created communication event between notifyer " + notifyerID + " and receiver " + myTaskID);
+                int index = waitingTasks.get(objID).indexOf(myTaskID);
+                waitingTasks.get(objID).remove(index);
+                if (waitingTasks.get(objID).size() == 0)
                 {
-                    waitingThreads.remove(objID);
-                    notifyingThreads.remove(objID);
+                    System.out.println("Waiting tasks list is empty. Removing waiting and notifying tasks related to object " + objID);
+                    waitingTasks.remove(objID);
+                    notifyingTasks.remove(objID);
                 }
             }
 
