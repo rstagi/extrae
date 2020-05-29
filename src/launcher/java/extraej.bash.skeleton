@@ -287,6 +287,7 @@ if [[ "${jartarget}" != "" ]]; then
 fi
 
 # Do we support AspectJ?
+ajc_successful="no"
 if [[ -x "${AJC}" ]]; then
 
 	# Do we have to reuse a previous existing instrumented package?
@@ -321,12 +322,15 @@ if [[ -x "${AJC}" ]]; then
 			-sourceroots ${tmpdir}/aspects \
 			-d ${tmpdir}/instrumented
 		if [[ "${?}" -ne 0 ]]; then
-			die "Error! ${AJC} failed"
+			#die "Error! ${AJC} failed"
+			echo "Error! ${AJC} failed"
+			ajc_successful="no"
+		else
+			execute_java ${tmpdir}/instrumented:${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${CLASSPATH} \
+				${EXTRAEJ_LIBPTTRACE_PATH} \
+				"$@"
+			ajc_successful="yes"
 		fi
-
-		execute_java ${tmpdir}/instrumented:${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${CLASSPATH} \
-			${EXTRAEJ_LIBPTTRACE_PATH} \
-			"$@"
 	else
 		# We want to reuse a previousl instrumented app
 		if [[ -d "${reuse_dir}" ]]; then
@@ -343,9 +347,11 @@ if [[ -x "${AJC}" ]]; then
 		execute_java ${reuse_dir}/instrumented:${ASPECTJRT_JAR}:${ASPECTWEAVER_JAR}:${CLASSPATH} \
 			${EXTRAEJ_LIBPTTRACE_PATH} \
 			"$@"
+		ajc_successful="yes"
 	fi
-else
+fi
 
+if [ "${ajc_successful}" = "no" ]; then
 	# We don't support AJC. Let's execute the code with Extrae support
 	execute_java "${CLASSPATH}" \
 		${EXTRAEJ_LIBPTTRACE_PATH} \
